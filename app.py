@@ -9,16 +9,15 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 import matplotlib.pyplot as plt
 
-# 1. Tải dữ liệu từ file CSV
-data = pd.read_csv('nvidia_stock_prices .csv')  # Đường dẫn đến file CSV 
+# Tải dữ liệu từ file CSV
+data = pd.read_csv('nvidia_stock_prices .csv') 
 
 # Kiểm tra vài dòng đầu của dữ liệu
 print(data.head())
 
-# 2. Định nghĩa X và y
-# Chọn các cột để tạo input và output
-X = data[['Open', 'High', 'Low', 'Volume']]  # Đây là các input
-y = data['Close']  # Đây là output
+# Chọn các cột dữ liệu
+X = data[['Open', 'High', 'Low', 'Volume']]  
+y = data['Close'] 
 
 # Chia dữ liệu
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -26,8 +25,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # In kích thước tập huấn luyện
 print("Kích thước tập huấn luyện:", X_train.shape)
 print("Kích thước tập kiểm tra:", X_test.shape)
-
-
 
 # Điều chỉnh giá trị thiếu
 imputer = SimpleImputer(strategy='mean')
@@ -39,21 +36,21 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-#Khởi tạo và huấn luyện mô hình
+# Khởi tạo và huấn luyện mô hình
 lin_reg = LinearRegression()
 lin_reg.fit(X_train, y_train)
 
 # Dự đoán trên tập kiểm tra
 y_pred_linear = lin_reg.predict(X_test)
 
-# 5. Đánh giá mô hình Linear Regression
+# Đánh giá mô hình Linear Regression
 mae_linear = mean_absolute_error(y_test, y_pred_linear)
 mse_linear = mean_squared_error(y_test, y_pred_linear)
 r2_linear = r2_score(y_test, y_pred_linear)
 
 print(f"Linear Regression - MAE: {mae_linear}, MSE: {mse_linear}, R-squared: {r2_linear}")
 
-# 6. So sánh với mô hình LSTM
+# So sánh với mô hình LSTM
 # Định dạng lại dữ liệu cho LSTM (dữ liệu 3D)
 X_train_lstm = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
 X_test_lstm = X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
@@ -72,7 +69,7 @@ lstm_model.fit(X_train_lstm, y_train.values.reshape(-1, 1), epochs=10, batch_siz
 # Dự đoán trên tập kiểm tra
 y_pred_lstm = lstm_model.predict(X_test_lstm)
 
-# 7. Đánh giá mô hình LSTM
+# Đánh giá mô hình LSTM
 mae_lstm = mean_absolute_error(y_test, y_pred_lstm)
 mse_lstm = mean_squared_error(y_test, y_pred_lstm)
 r2_lstm = r2_score(y_test, y_pred_lstm)
